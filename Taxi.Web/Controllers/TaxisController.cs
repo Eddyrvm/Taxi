@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Threading.Tasks;
 using Taxi.Web.Data;
 using Taxi.Web.Data.Entities;
@@ -50,8 +51,25 @@ namespace Taxi.Web.Controllers
             {
                 taxiEntity.Plaque = taxiEntity.Plaque.ToUpper();
                 _context.Add(taxiEntity);
+
+                try
+                { 
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
+
+                }
+                catch (Exception ex)
+                {
+                    if (ex.InnerException.Message.Contains("duplicate"))
+                    {
+                        ModelState.AddModelError(string.Empty, "Ya existe el numero de placa");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Ya existe el numero de placa");
+                    }
+                    
+                }
             }
             return View(taxiEntity);
         }
@@ -85,10 +103,25 @@ namespace Taxi.Web.Controllers
             {
                 taxiEntity.Plaque = taxiEntity.Plaque.ToUpper();
                 _context.Update(taxiEntity);
-                await _context.SaveChangesAsync();
 
+                try
+                {
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
 
-                return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    if (ex.InnerException.Message.Contains("duplicate"))
+                    {
+                        ModelState.AddModelError(string.Empty, "Ya existe el numero de placa");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Ya existe el numero de placa");
+                    }
+
+                }
             }
             return View(taxiEntity);
         }
